@@ -326,13 +326,7 @@ class SwipeRow extends Component {
 	render() {
 		return (
 			<View style={this.props.style ? this.props.style : styles.container}>
-				<View style={[
-					styles.hidden,
-					{
-						height: this.state.hiddenHeight,
-						width: this.state.hiddenWidth,
-					}
-				]}>
+				<View style={styles.hidden}>
 					{this.props.children[0]}
 				</View>
 				{this.renderRowContent()}
