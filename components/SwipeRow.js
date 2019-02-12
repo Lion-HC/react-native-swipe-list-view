@@ -139,7 +139,8 @@ class SwipeRow extends Component {
 		if (absDx > this.props.directionalDistanceChangeThreshold || absDy > this.props.directionalDistanceChangeThreshold) {
 			// we have enough to determine direction
 			if (absDy > absDx && !this.horizontalSwipeGestureBegan) {
-				// user is moving vertically, do nothing, listView will handle
+				// user is moving vertically, init Alt action (like Drag&Drop), or do nothing - listView will handle
+				this.props.swipeAltGestureBegan && this.props.swipeAltGestureBegan();
 				return;
 			}
 
@@ -223,19 +224,25 @@ class SwipeRow extends Component {
 	/*
 	 * This method is called by SwipeListView
 	 */
-	closeRow() {
-		this.manuallySwipeRow(0);
+	closeRow(action) {
+		this.manuallySwipeRow(0, action);
 	}
 
-	manuallySwipeRow(toValue) {
+	manuallySwipeRow(toValue, action) {
 		Animated.spring(
 			this._translateX,
 			{
 				toValue,
-				friction: this.props.friction,
-				tension: this.props.tension,
+				stiffness: 100,
+				damping: 0.1,
+				mass: .5,
+				overshootClamping: true,
+				restSpeedThreshold: 10,
 			}
 		).start( _ => {
+			action && setTimeout(() => {
+				action(toValue);
+			}, 0);
 			this.ensureScrollEnabled()
 			if (toValue === 0) {
 				this.isOpen = false;
@@ -362,6 +369,10 @@ SwipeRow.propTypes = {
 	 * Called when it has been detected that a row should be swiped open.
 	 */
 	swipeGestureBegan: PropTypes.func,
+	/**
+	 * Called when it has been detected that a row should be swiped open.
+	 */
+	swipeAltGestureBegan: PropTypes.func,
 	/**
 	 * Called when a swipe row is animating open. Used by the SwipeListView
 	 * to keep references to open rows.
