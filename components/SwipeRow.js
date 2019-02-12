@@ -225,7 +225,12 @@ class SwipeRow extends Component {
 	 * This method is called by SwipeListView
 	 */
 	closeRow(action, force) {
-		this.manuallySwipeRow(0, action, force);
+		if (this.isOpen) {
+			this.manuallySwipeRow(0, action, force);
+		}
+		else if (action) {
+			action(0);
+		}
 	}
 
 	manuallySwipeRow(toValue, action, force) {
