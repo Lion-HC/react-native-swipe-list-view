@@ -224,22 +224,18 @@ class SwipeRow extends Component {
 	/*
 	 * This method is called by SwipeListView
 	 */
-	closeRow(action) {
-		this.manuallySwipeRow(0, action);
+	closeRow(action, force) {
+		this.manuallySwipeRow(0, action, force);
 	}
 
-	manuallySwipeRow(toValue, action) {
-		Animated.spring(
-			this._translateX,
-			{
-				toValue,
-				stiffness: 100,
-				damping: 0.1,
-				mass: .5,
-				overshootClamping: true,
-				restSpeedThreshold: 10,
-			}
-		).start( _ => {
+	manuallySwipeRow(toValue, action, force) {
+		if (toValue === 0) {
+			this.props.onRowClose && this.props.onRowClose();
+		} else {
+			this.props.onRowOpen && this.props.onRowOpen(toValue);
+		}
+
+		var finalAction =  _ => {
 			action && setTimeout(() => {
 				action(toValue);
 			}, 0);
@@ -251,12 +247,24 @@ class SwipeRow extends Component {
 				this.isOpen = true;
 				this.props.onRowDidOpen && this.props.onRowDidOpen(toValue);
 			}
-		});
+		};
 
-		if (toValue === 0) {
-			this.props.onRowClose && this.props.onRowClose();
-		} else {
-			this.props.onRowOpen && this.props.onRowOpen(toValue);
+		if (force) {
+			this._translateX.setValue(toValue);
+			finalAction();
+		}
+		else {
+			Animated.spring(
+				this._translateX,
+				{
+					toValue,
+					stiffness: 100,
+					damping: 0.1,
+					mass: .5,
+					overshootClamping: true,
+					restSpeedThreshold: 10,
+				}
+			).start(finalAction);
 		}
 
 		// reset everything
