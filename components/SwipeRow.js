@@ -140,7 +140,7 @@ class SwipeRow extends Component {
 			// we have enough to determine direction
 			if (absDy > absDx && !this.horizontalSwipeGestureBegan) {
 				// user is moving vertically, init Alt action (like Drag&Drop), or do nothing - listView will handle
-				this.props.swipeAltGestureBegan && this.props.swipeAltGestureBegan();
+				this.props.swipeAltGestureBegan && this.props.swipeAltGestureBegan(e, gestureState);
 				return;
 			}
 
@@ -157,7 +157,7 @@ class SwipeRow extends Component {
 			}
 			if (!this.horizontalSwipeGestureBegan) {
 				this.horizontalSwipeGestureBegan = true;
-				this.props.swipeGestureBegan && this.props.swipeGestureBegan();
+				this.props.swipeGestureBegan && this.props.swipeGestureBegan(e, gestureState);
 			}
 
 			let newDX = this.swipeInitialX + dx;
